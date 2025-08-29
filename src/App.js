@@ -1,9 +1,11 @@
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 // --- Navbar Component ---
 // This component handles the navigation bar at the top of the dashboards.
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-
 const Navbar = ({ role }) => {
   // useNavigate is a hook from react-router-dom to programmatically navigate.
   const navigate = useNavigate();
@@ -42,11 +44,6 @@ const Navbar = ({ role }) => {
 
 // --- AuthForm Component ---
 // This component handles the login and registration forms.
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState('');
@@ -222,10 +219,6 @@ const AuthForm = () => {
 
 // --- TaskCard Component ---
 // Reusable component to display a single task.
-import React, { useState } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-
 const TaskCard = ({ task, onTaskUpdate }) => {
   const [proofFile, setProofFile] = useState(null);
   const [deliverableLink, setDeliverableLink] = useState('');
@@ -358,11 +351,6 @@ const TaskCard = ({ task, onTaskUpdate }) => {
 
 // --- ProjectManagerDashboard Component ---
 // This is the dashboard for a Project Manager.
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-
 const ProjectManagerDashboard = () => {
   const [teamMembers, setTeamMembers] = useState([]);
   const [analytics, setAnalytics] = useState({});
@@ -550,11 +538,6 @@ const ProjectManagerDashboard = () => {
 
 // --- TeamMemberDashboard Component ---
 // This is the dashboard for a Team Member.
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-
 const TeamMemberDashboard = () => {
   const [tasks, setTasks] = useState([]);
   const [analytics, setAnalytics] = useState({});
@@ -644,11 +627,6 @@ const TeamMemberDashboard = () => {
 
 
 // Main App component that contains all the routing logic
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
 const App = () => {
   return (
     // BrowserRouter enables client-side routing
