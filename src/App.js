@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
-import { format } from 'date-fns';
-
 // --- Navbar Component ---
 // This component handles the navigation bar at the top of the dashboards.
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+
 const Navbar = ({ role }) => {
   // useNavigate is a hook from react-router-dom to programmatically navigate.
   const navigate = useNavigate();
@@ -45,6 +42,11 @@ const Navbar = ({ role }) => {
 
 // --- AuthForm Component ---
 // This component handles the login and registration forms.
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState('');
@@ -220,6 +222,10 @@ const AuthForm = () => {
 
 // --- TaskCard Component ---
 // Reusable component to display a single task.
+import React, { useState } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+
 const TaskCard = ({ task, onTaskUpdate }) => {
   const [proofFile, setProofFile] = useState(null);
   const [deliverableLink, setDeliverableLink] = useState('');
@@ -267,46 +273,29 @@ const TaskCard = ({ task, onTaskUpdate }) => {
       return;
     }
 
-    let proofBase64 = null;
+    // Use FormData for file upload to handle both file and other data
+    const formData = new FormData();
     if (proofFile) {
-      const reader = new FileReader();
-      reader.readAsDataURL(proofFile);
-      reader.onloadend = async () => {
-        proofBase64 = reader.result;
-        try {
-          await axios.put(
-            `http://localhost:5000/api/tasks/submit/${task._id}`,
-            { deliverableLink, proofBase64 },
-            {
-              headers: { Authorization: `Bearer ${token}` }
-            }
-          );
-          toast.success('Task submitted successfully!');
-          onTaskUpdate();
-        } catch (error) {
-          toast.error('Failed to submit task.');
-          console.error(error);
-        }
-      };
-      reader.onerror = (error) => {
-        console.error("Error reading file:", error);
-        toast.error("Error reading file.");
-      };
-    } else {
-      try {
-        await axios.put(
-          `http://localhost:5000/api/tasks/submit/${task._id}`,
-          { deliverableLink },
-          {
-            headers: { Authorization: `Bearer ${token}` }
+        formData.append('proofFile', proofFile);
+    }
+    formData.append('deliverableLink', deliverableLink);
+
+    try {
+      await axios.put(
+        `http://localhost:5000/api/tasks/submit/${task._id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
           }
-        );
-        toast.success('Task submitted successfully!');
-        onTaskUpdate();
-      } catch (error) {
-        toast.error('Failed to submit task.');
-        console.error(error);
-      }
+        }
+      );
+      toast.success('Task submitted successfully!');
+      onTaskUpdate();
+    } catch (error) {
+      toast.error('Failed to submit task.');
+      console.error(error);
     }
   };
 
@@ -369,6 +358,11 @@ const TaskCard = ({ task, onTaskUpdate }) => {
 
 // --- ProjectManagerDashboard Component ---
 // This is the dashboard for a Project Manager.
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+
 const ProjectManagerDashboard = () => {
   const [teamMembers, setTeamMembers] = useState([]);
   const [analytics, setAnalytics] = useState({});
@@ -556,6 +550,11 @@ const ProjectManagerDashboard = () => {
 
 // --- TeamMemberDashboard Component ---
 // This is the dashboard for a Team Member.
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+
 const TeamMemberDashboard = () => {
   const [tasks, setTasks] = useState([]);
   const [analytics, setAnalytics] = useState({});
@@ -645,6 +644,11 @@ const TeamMemberDashboard = () => {
 
 
 // Main App component that contains all the routing logic
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const App = () => {
   return (
     // BrowserRouter enables client-side routing
