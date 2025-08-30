@@ -55,6 +55,9 @@ const AuthForm = () => {
 
   const navigate = useNavigate();
 
+  // Get the API URL from the environment variable
+  const API_URL = process.env.REACT_APP_API_URL;
+
   const handleFileChange = (e) => {
     setProfilePhoto(e.target.files[0]);
   };
@@ -81,7 +84,7 @@ const AuthForm = () => {
       }
 
       // Send the FormData object to the server
-      const { data } = await axios.post('http://localhost:5000/api/auth/register', formData, {
+      const { data } = await axios.post(`${API_URL}/api/auth/register`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data', // Axios handles this automatically with FormData
         },
@@ -112,7 +115,7 @@ const AuthForm = () => {
     }
 
     try {
-      const { data } = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+      const { data } = await axios.post(`${API_URL}/api/auth/login`, { email, password });
 
       localStorage.setItem('token', data.token);
       localStorage.setItem('userRole', data.user.role);
@@ -223,6 +226,9 @@ const TaskCard = ({ task, onTaskUpdate }) => {
   const [proofFile, setProofFile] = useState(null);
   const [deliverableLink, setDeliverableLink] = useState('');
 
+  // Get the API URL from the environment variable
+  const API_URL = process.env.REACT_APP_API_URL;
+
   const handleStartTask = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -232,7 +238,7 @@ const TaskCard = ({ task, onTaskUpdate }) => {
 
     try {
       await axios.put(
-        `http://localhost:5000/api/tasks/start/${task._id}`,
+        `${API_URL}/api/tasks/start/${task._id}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -269,13 +275,13 @@ const TaskCard = ({ task, onTaskUpdate }) => {
     // Use FormData for file upload to handle both file and other data
     const formData = new FormData();
     if (proofFile) {
-        formData.append('proofFile', proofFile);
+      formData.append('proofFile', proofFile);
     }
     formData.append('deliverableLink', deliverableLink);
 
     try {
       await axios.put(
-        `http://localhost:5000/api/tasks/submit/${task._id}`,
+        `${API_URL}/api/tasks/submit/${task._id}`,
         formData,
         {
           headers: {
@@ -360,6 +366,10 @@ const ProjectManagerDashboard = () => {
   const navigate = useNavigate();
   const userRole = localStorage.getItem('userRole');
 
+  // Get the API URL from the environment variable
+  const API_URL = process.env.REACT_APP_API_URL;
+
+
   useEffect(() => {
     // Redirect if not a Project Manager
     if (userRole !== 'Project Manager') {
@@ -372,7 +382,7 @@ const ProjectManagerDashboard = () => {
       if (!token) return;
       try {
         // Fetch user profile data to get the team code
-        const { data } = await axios.get('http://localhost:5000/api/users/profile', {
+        const { data } = await axios.get(`${API_URL}/api/users/profile`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         // Set the team code from the user data
@@ -390,7 +400,7 @@ const ProjectManagerDashboard = () => {
       if (!token) return;
 
       try {
-        const { data } = await axios.get('http://localhost:5000/api/users/team', {
+        const { data } = await axios.get(`${API_URL}/api/users/team`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setTeamMembers(data);
@@ -405,7 +415,7 @@ const ProjectManagerDashboard = () => {
       if (!token) return;
 
       try {
-        const { data } = await axios.get('http://localhost:5000/api/tasks/analytics/manager', {
+        const { data } = await axios.get(`${API_URL}/api/tasks/analytics/manager`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setAnalytics(data);
@@ -418,7 +428,7 @@ const ProjectManagerDashboard = () => {
     fetchUserData();
     fetchTeamMembers();
     fetchAnalytics();
-  }, [userRole, navigate]);
+  }, [userRole, navigate, API_URL]);
 
   const handleAssignTask = async (e) => {
     e.preventDefault();
@@ -427,7 +437,7 @@ const ProjectManagerDashboard = () => {
 
     try {
       await axios.post(
-        'http://localhost:5000/api/tasks/assign',
+        `${API_URL}/api/tasks/assign`,
         newTask,
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -544,12 +554,15 @@ const TeamMemberDashboard = () => {
   const navigate = useNavigate();
   const userRole = localStorage.getItem('userRole');
 
+  // Get the API URL from the environment variable
+  const API_URL = process.env.REACT_APP_API_URL;
+
   const fetchTasks = async () => {
     const token = localStorage.getItem('token');
     if (!token) return;
 
     try {
-      const { data } = await axios.get('http://localhost:5000/api/tasks/my', {
+      const { data } = await axios.get(`${API_URL}/api/tasks/my`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setTasks(data);
@@ -564,7 +577,7 @@ const TeamMemberDashboard = () => {
     if (!token) return;
 
     try {
-      const { data } = await axios.get('http://localhost:5000/api/tasks/analytics/member', {
+      const { data } = await axios.get(`${API_URL}/api/tasks/analytics/member`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setAnalytics(data);
@@ -582,7 +595,7 @@ const TeamMemberDashboard = () => {
     }
     fetchTasks();
     fetchAnalytics();
-  }, [userRole, navigate]);
+  }, [userRole, navigate, API_URL]);
 
   return (
     <>
@@ -641,7 +654,7 @@ const App = () => {
         {/* Routes component acts as a container for all Route definitions */}
         <Routes>
           {/* Route for the authentication page (login/signup).
-            This is the default route that loads at the root URL (/).
+              This is the default route that loads at the root URL (/).
           */}
           <Route path="/" element={<AuthForm />} />
 
